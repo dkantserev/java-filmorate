@@ -28,7 +28,7 @@ class FilmorateApplicationTests {
 
     @Test
     void test1_createValidUserResponseShouldBeOk() throws Exception {
-        User user = new User("gfgf@hh.tr", "gfgf@hh.tr", LocalDate.of(2001, 2, 2));
+        User user = new User("gjjjl@hh.tr", "gfgf@hh.tr", LocalDate.of(2001, 2, 2));
         user.setName("hhhh");
         String body = mapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -37,7 +37,7 @@ class FilmorateApplicationTests {
 
     @Test
     void test2_UserDateOfBirthInTheFuture() throws Exception {
-        User user = new User("gfgf@hh.tr", "gfgf@hh.tr", LocalDate.of(2500, 2, 2));
+        User user = new User("fjj@h.tr", "gfgf@hh.tr", LocalDate.of(2500, 2, 2));
         user.setName("hhhh");
         String body = mapper.writeValueAsString(user);
         this.mockMvc.perform(post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -83,7 +83,7 @@ class FilmorateApplicationTests {
     @Test
     void test7_FilmLengthDescription200() throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i <=200; i++) {
             stringBuilder.append("r");
         }
         Film film = new Film("gfgf@hh.tr", stringBuilder.toString(), LocalDate.of(2001, 2

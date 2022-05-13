@@ -2,18 +2,18 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.IllegalUpdateObject;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import javax.validation.Valid;
+import java.util.*;
 
 @Slf4j
 @RestController
+@Validated
 public class UserController {
 
     @Autowired
@@ -22,12 +22,12 @@ public class UserController {
     int id = 0;
 
     @GetMapping("/users")
-    public Map<Integer, User> getUsers() {
-        return userMap;
+    public List<User> get() {
+        return new ArrayList<>(userMap.values());
     }
 
     @PostMapping(value = "/users")
-    public User addUser(@RequestBody User user) {
+    public User add(@Valid @RequestBody User user) {
 
         Optional<UserValidator> filmValidator = filmValidatorList.stream()
                 .filter(validator -> !validator.test(user))
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public User updateFilm(@RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
         if (userMap.containsKey(user.getId())) {
             userMap.put(user.getId(), user);
         } else {

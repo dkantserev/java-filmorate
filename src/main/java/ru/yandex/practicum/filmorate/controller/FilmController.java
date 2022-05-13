@@ -2,12 +2,14 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.IllegalUpdateObject;
 import ru.yandex.practicum.filmorate.exception.NullContextException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
+@Validated
 public class FilmController {
     @Autowired
     List<FilmValidator> filmValidatorList;
@@ -22,12 +25,12 @@ public class FilmController {
     private int id = 0;
 
     @GetMapping("/films")
-    public Map<Integer, Film> getFilms() {
+    public Map<Integer, Film> get() {
         return filmMap;
     }
 
     @PostMapping(value = "/films")
-    public Film addFilm(@RequestBody Film film) {
+    public Film add(@Valid @RequestBody Film film) {
         if (film.getName() == null || film.getReleaseDate() == null || film.getDescription().isBlank()) {
             throw new NullContextException("object contains null parameters");
         } else {
@@ -46,7 +49,7 @@ public class FilmController {
     }
 
     @PutMapping("/films")
-    public Film updateFilm(@RequestBody Film film) {
+    public Film update(@Valid @RequestBody Film film) {
         if (filmMap.containsKey(film.getId())) {
             if (film.getDescription() == null || film.getName() == null || film.getReleaseDate() == null) {
                 throw new NullContextException("object contains null parameters");
