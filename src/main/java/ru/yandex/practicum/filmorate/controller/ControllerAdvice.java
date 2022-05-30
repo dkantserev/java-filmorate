@@ -17,7 +17,7 @@ public class ControllerAdvice {
 
     @ExceptionHandler(IllegalUpdateObject.class)
     public ResponseEntity<String> handleIllegalUpdateObject(IllegalUpdateObject e){
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DataReleaseException.class)
@@ -53,6 +53,11 @@ public class ControllerAdvice {
     @ExceptionHandler(BadEmailException.class)
     public ResponseEntity<String> handleIllegalUpdateObject(BadEmailException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleIllegalUpdateObject(NotFoundException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
     }
 
 }

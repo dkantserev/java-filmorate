@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.IllegalUpdateObject;
 import ru.yandex.practicum.filmorate.exception.NullContextException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
 import javax.validation.Valid;
@@ -17,56 +22,55 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
+
 @Validated
 public class FilmController {
     @Autowired
-    List<FilmValidator> filmValidatorList;
-    private final Map<Integer, Film> filmMap = new HashMap();
-    private int id = 0;
+    InMemoryFilmStorage storage;
+    @Autowired
+    InMemoryUserStorage userStorage;
+    @Autowired
+    FilmService filmService;
+
 
     @GetMapping("/films")
-    public Map<Integer, Film> get() {
-        return filmMap;
+    public List<Film> get() {
+        return storage.get();
     }
 
-    @PostMapping(value = "/films")
+    @PostMapping("/films")
     public Film add(@Valid @RequestBody Film film) {
-        if (film.getName() == null || film.getReleaseDate() == null || film.getDescription().isBlank()) {
-            throw new NullContextException("object contains null parameters");
-        } else {
-            Optional<FilmValidator> filmValidator = filmValidatorList.stream()
-                    .filter(validator -> !validator.test(film))
-                    .findFirst();
-            filmValidator.ifPresent(validator -> {
-                throw validator.errorObject();
-            });
-            id++;
-            film.setId(id);
-            filmMap.put(id, film);
-        }
+        storage.add(film);
         log.info("add film" + film);
         return film;
     }
 
     @PutMapping("/films")
     public Film update(@Valid @RequestBody Film film) {
-        if (filmMap.containsKey(film.getId())) {
-            if (film.getDescription() == null || film.getName() == null || film.getReleaseDate() == null) {
-                throw new NullContextException("object contains null parameters");
-            } else {
-                Optional<FilmValidator> filmValidator = filmValidatorList.stream()
-                        .filter(validator -> !validator.test(film))
-                        .findFirst();
-                filmValidator.ifPresent(validator -> {
-                    throw validator.errorObject();
-                });
-                filmMap.put(film.getId(), film);
-            }
-        } else {
-            throw new IllegalUpdateObject("There is no movie with this id");
-        }
+        storage.update(film);
         log.info("update film" + film);
         return film;
+    }
+
+    @PutMapping("/films/{id}/like/{userId}")
+    public Film addLike(@PathVariable int id, @PathVariable int userId) {
+        filmService.addLike(storage.getAll().get(id), userStorage.getId(userId));
+        return storage.getAll().get(id);
+    }
+
+    @DeleteMapping("/films/{id}/like/{userId}")
+    public void deleteLike(@PathVariable int id, @PathVariable int userId) {
+        filmService.deleteLike(storage.getAll().get(id), userStorage.getId(userId));
+    }
+
+    @GetMapping("/films/popular")
+    public List<Film> getPopular(@RequestParam(defaultValue = "10", required = false) int count) {
+        return filmService.getPopularFilm(count);
+    }
+
+    @GetMapping("/films/{id}")
+    public Film getId(@PathVariable int id) {
+        return storage.getId(id);
     }
 
 

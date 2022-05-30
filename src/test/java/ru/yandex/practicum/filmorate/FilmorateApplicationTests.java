@@ -83,7 +83,7 @@ class FilmorateApplicationTests {
     @Test
     void test7_FilmLengthDescription200() throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i <=200; i++) {
+        for (int i = 0; i <200; i++) {
             stringBuilder.append("r");
         }
         Film film = new Film("gfgf@hh.tr", stringBuilder.toString(), LocalDate.of(2001, 2
