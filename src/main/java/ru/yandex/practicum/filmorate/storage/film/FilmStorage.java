@@ -15,4 +15,6 @@ public interface FilmStorage {
     List<Film> get();
 
     Film getId(int id);
+
+    void delete(int id);
 }

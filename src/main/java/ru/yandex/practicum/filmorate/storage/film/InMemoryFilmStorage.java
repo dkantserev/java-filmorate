@@ -78,4 +78,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
+    @Override
+    public void delete(int id) {
+        if (filmMap.containsKey(id)) {
+            filmMap.remove(id);
+        } else {
+            throw new NotFoundException("film not found");
+        }
+    }
 }
+
+
