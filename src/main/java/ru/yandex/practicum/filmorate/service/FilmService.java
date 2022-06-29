@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class FilmService {
+public class FilmService implements FilmServiceInter {
     @Autowired
     InMemoryFilmStorage filmStorage;
     @Autowired
@@ -22,6 +23,7 @@ public class FilmService {
 
     private Map<Film, Set<User>> likeMap = new HashMap<>();
 
+    @Override
     public void addLike(Film film, User user) {
         if (filmStorage.getAll().containsValue(film) && userStorage.getAll().contains(user)) {
             if (!likeMap.containsKey(film)) {
@@ -36,6 +38,7 @@ public class FilmService {
         }
     }
 
+    @Override
     public List<Film> getPopularFilm(int count) {
         List<Film> r = likeMap.entrySet().stream().sorted((Comparator.comparingInt(o -> o.getValue().size())))
                 .map(Map.Entry::getKey).limit(count).collect(Collectors.toList());
@@ -51,6 +54,7 @@ public class FilmService {
 
     }
 
+    @Override
     public void deleteLike(Film film, User user) {
         if (!likeMap.containsKey(film)) {
             throw new NotFoundException("film don't found");
@@ -61,6 +65,7 @@ public class FilmService {
             likeMap.get(film).remove(user);
         }
     }
+
 
 
 }

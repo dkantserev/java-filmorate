@@ -11,12 +11,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements UserServiceInter {
 
     @Autowired
     InMemoryUserStorage userStorage;
     private Map<User, Set<User>> greatFriendsMap = new HashMap<>();
 
+    @Override
     public Set<User> getAllFriends(User user) {
         if (greatFriendsMap.isEmpty()) {
             throw new NotFoundException("friends don't found");
@@ -24,6 +25,7 @@ public class UserService {
         return greatFriendsMap.get(user);
     }
 
+    @Override
     public void addFriend(User main, User friend) {
 
         if (userStorage.getAll().contains(main) && userStorage.getAll().contains(friend)) {
@@ -47,6 +49,7 @@ public class UserService {
         }
     }
 
+    @Override
     public void deleteFriend(User main, User friend) {
 
         if (greatFriendsMap.containsKey(main) && greatFriendsMap.containsKey(friend)) {
@@ -56,6 +59,7 @@ public class UserService {
         }
     }
 
+    @Override
     public List<User> mutualFriends(User main, User friend) {
         if (!greatFriendsMap.containsKey(main) && !greatFriendsMap.containsKey(friend)) {
             return new ArrayList<>();

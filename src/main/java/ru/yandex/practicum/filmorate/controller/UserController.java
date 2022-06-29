@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.service.UserServiceDB;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -19,9 +19,9 @@ import java.util.*;
 public class UserController {
 
     @Autowired
-    InMemoryUserStorage storage;
+    UserDbStorage storage;
     @Autowired
-    UserService userService;
+    UserServiceDB userService;
 
     @GetMapping
     public List<User> get() {
@@ -32,6 +32,8 @@ public class UserController {
     public User add(@Valid @RequestBody User user) {
         storage.add(user);
         log.info("add user" + user);
+        int id = storage.getIdUser(user);
+        user.setId(id);
         return user;
     }
 
@@ -72,6 +74,11 @@ public class UserController {
     @GetMapping("/{id}")
     public User getId(@PathVariable int id) {
         return storage.getId(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public User deleteId(@PathVariable int id) {
+        return storage.delete(id);
     }
 
 
