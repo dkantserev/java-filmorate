@@ -15,7 +15,10 @@ import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmServiceDB;
 import ru.yandex.practicum.filmorate.service.UserServiceDB;
+import ru.yandex.practicum.filmorate.storage.category.MPADB;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.friendDB.FriendDB;
+import ru.yandex.practicum.filmorate.storage.genre.GenreDB;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
@@ -38,8 +41,16 @@ class AllControllerTest {
     FilmServiceDB filmServiceDB;
     @Autowired
     UserServiceDB userServiceDB;
+
+    @Autowired
+    FriendDB friendDB;
     @Autowired
     ObjectMapper mapper;
+
+    @Autowired
+    GenreDB genreDB;
+    @Autowired
+    MPADB mpadb;
 
     @Autowired
     MockMvc mockMvc;
@@ -121,10 +132,10 @@ class AllControllerTest {
         this.mockMvc.perform(put("/users/1/friends/3")).andExpect(status().is(200));
         this.mockMvc.perform(put("/users/2/friends/3")).andExpect(status().is(200));
         this.mockMvc.perform(get("/users/1/friends")).andExpect(status().is(200));
-        assertEquals(userServiceDB.getAllFriends(userDbStorage.getId(1)).size(), 2);
+        assertEquals(friendDB.getAllFriends(userDbStorage.getId(1)).size(), 2);
         assertEquals(userServiceDB.mutualFriends(userDbStorage.getId(1), userDbStorage.getId(2)).size(), 1);
         this.mockMvc.perform(delete("/users/1/friends/2")).andExpect(status().is(200));
-        assertEquals(userServiceDB.getAllFriends(userDbStorage.getId(1)).size(), 1);
+        assertEquals(friendDB.getAllFriends(userDbStorage.getId(1)).size(), 1);
 
     }
 
@@ -133,7 +144,7 @@ class AllControllerTest {
 
         this.mockMvc.perform(get("/mpa")).andExpect(status().is(200));
         this.mockMvc.perform(get("/mpa/1")).andExpect(status().is(200));
-        assertEquals(filmServiceDB.getMpaId(1).getName(), "G");
+        assertEquals(mpadb.getMpaId(1).getName(), "G");
     }
 
     @Test
@@ -141,7 +152,7 @@ class AllControllerTest {
 
         this.mockMvc.perform(get("/genres")).andExpect(status().is(200));
         this.mockMvc.perform(get("/genres/1")).andExpect(status().is(200));
-        assertEquals(filmServiceDB.getGenresId(1).getName(), "Комедия");
+        assertEquals(genreDB.getGenresId(1).getName(), "Комедия");
     }
 
     @Test

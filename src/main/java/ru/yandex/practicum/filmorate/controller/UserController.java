@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserServiceDB;
+import ru.yandex.practicum.filmorate.storage.friendDB.FriendDB;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import javax.validation.Valid;
@@ -22,6 +23,9 @@ public class UserController {
     UserDbStorage storage;
     @Autowired
     UserServiceDB userService;
+
+    @Autowired
+    FriendDB friendDB;
 
     @GetMapping
     public List<User> get() {
@@ -46,7 +50,7 @@ public class UserController {
 
     @PutMapping("/{id}/friends/{friendId}")
     public User addFriend(@PathVariable int id, @PathVariable int friendId) {
-        userService.addFriend(storage.getId(id), storage.getId(friendId));
+        friendDB.addFriend(storage.getId(id), storage.getId(friendId));
         return storage.getId(id);
 
     }
@@ -54,7 +58,7 @@ public class UserController {
     @DeleteMapping("/{id}/friends/{friendId}")
     public User deleteFriend(@PathVariable @NotNull Map<String, String> patchV) {
         if (!patchV.get("id").isBlank() && !patchV.get("friendId").isBlank()) {
-            userService.deleteFriend(storage.getId(Integer.parseInt(patchV.get("id"))),
+            friendDB.deleteFriend(storage.getId(Integer.parseInt(patchV.get("id"))),
                     storage.getId(Integer.parseInt(patchV.get("friendId"))));
             return storage.getId(Integer.parseInt(patchV.get("friendId")));
         }
@@ -63,7 +67,7 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public Set<User> getFriends(@PathVariable int id) {
-        return userService.getAllFriends(storage.getId(id));
+        return friendDB.getAllFriends(storage.getId(id));
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
