@@ -16,10 +16,26 @@ import java.util.stream.Collectors;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    @Autowired
     List<FilmValidator> filmValidatorList;
-    @Autowired
+
     LikesMemory likesMemory;
+
+    public List<FilmValidator> getFilmValidatorList() {
+        return filmValidatorList;
+    }
+
+    public void setFilmValidatorList(List<FilmValidator> filmValidatorList) {
+        this.filmValidatorList = filmValidatorList;
+    }
+
+    public LikesMemory getLikesMemory() {
+        return likesMemory;
+    }
+
+    public void setLikesMemory(LikesMemory likesMemory) {
+        this.likesMemory = likesMemory;
+    }
+
     private final Map<Integer, Film> filmMap = new HashMap();
     private int id = 0;
 

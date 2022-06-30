@@ -16,9 +16,15 @@ import java.util.Set;
 @Component
 public class LikesMemory implements LikesInt{
 
-    @Autowired
+
     InMemoryFilmStorage filmStorage;
-    @Autowired
+
+    public LikesMemory(InMemoryFilmStorage filmStorage, InMemoryUserStorage userStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+    }
+
+
     InMemoryUserStorage userStorage;
 
     public Map<Film, Set<User>> getLikeMap() {
