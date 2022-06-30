@@ -6,9 +6,11 @@ import ru.yandex.practicum.filmorate.exception.IllegalUpdateObject;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.NullContextException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.likes.LikesMemory;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -16,6 +18,8 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Autowired
     List<FilmValidator> filmValidatorList;
+    @Autowired
+    LikesMemory likesMemory;
     private final Map<Integer, Film> filmMap = new HashMap();
     private int id = 0;
 
@@ -85,6 +89,22 @@ public class InMemoryFilmStorage implements FilmStorage {
         } else {
             throw new NotFoundException("film not found");
         }
+    }
+
+    public List<Film> getPopularFilm(int count) {
+        List<Film> r = likesMemory.getLikeMap().entrySet().stream().
+                sorted((Comparator.comparingInt(o -> o.getValue().size())))
+                .map(Map.Entry::getKey).limit(count).collect(Collectors.toList());
+        if (r.size() < count && r.size() < getAll().size()) {
+            for (Film value : getAll().values()) {
+                if (!r.contains(value)) {
+                    r.add(value);
+                }
+            }
+            return getAll().values().stream().limit(count - r.size()).collect(Collectors.toList());
+        }
+        return r;
+
     }
 }
 

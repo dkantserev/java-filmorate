@@ -6,10 +6,9 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Component
 public class FriendMemory implements FriendInt {
 
@@ -64,5 +63,15 @@ public class FriendMemory implements FriendInt {
         } else {
             throw new NotFoundException("user or friend don't found");
         }
+    }
+@Override
+    public List<User> mutualFriends(User main, User friend) {
+        if (!greatFriendsMap.containsKey(main) && !greatFriendsMap.containsKey(friend)) {
+            return new ArrayList<>();
+        }
+        List<User> mF = greatFriendsMap.get(main).stream().
+                filter(greatFriendsMap.get(friend)::contains).collect(Collectors.toList());
+
+        return mF;
     }
 }

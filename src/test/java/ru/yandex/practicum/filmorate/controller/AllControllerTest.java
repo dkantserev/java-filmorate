@@ -13,8 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.FilmServiceDB;
-import ru.yandex.practicum.filmorate.service.UserServiceDB;
 import ru.yandex.practicum.filmorate.storage.category.MPADB;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.friendDB.FriendDB;
@@ -37,10 +35,6 @@ class AllControllerTest {
     FilmDbStorage filmDbStorage;
     @Autowired
     UserDbStorage userDbStorage;
-    @Autowired
-    FilmServiceDB filmServiceDB;
-    @Autowired
-    UserServiceDB userServiceDB;
 
     @Autowired
     FriendDB friendDB;
@@ -133,7 +127,7 @@ class AllControllerTest {
         this.mockMvc.perform(put("/users/2/friends/3")).andExpect(status().is(200));
         this.mockMvc.perform(get("/users/1/friends")).andExpect(status().is(200));
         assertEquals(friendDB.getAllFriends(userDbStorage.getId(1)).size(), 2);
-        assertEquals(userServiceDB.mutualFriends(userDbStorage.getId(1), userDbStorage.getId(2)).size(), 1);
+        assertEquals(friendDB.mutualFriends(userDbStorage.getId(1), userDbStorage.getId(2)).size(), 1);
         this.mockMvc.perform(delete("/users/1/friends/2")).andExpect(status().is(200));
         assertEquals(friendDB.getAllFriends(userDbStorage.getId(1)).size(), 1);
 
@@ -158,8 +152,10 @@ class AllControllerTest {
     @Test
     void test6_Films() throws Exception {
 
-        Film film = new Film("Кинконг", " что то про обезьяну", LocalDate.of(1933, 1, 1), 60);
-        Film film2 = new Film("Кинконг", " что то про обезьяну", LocalDate.of(1961, 1, 1), 60);
+        Film film = new Film("Кинконг", " что то про обезьяну", LocalDate.of(1933, 1,
+                1), 60);
+        Film film2 = new Film("Кинконг", " что то про обезьяну", LocalDate.of(1961, 1,
+                1), 60);
         film.setMpa(new MPA(1, null));
         film2.setMpa(new MPA(3, null));
         User user = new User("gjjjl@hh.tr", "gfgf@hh.tr", LocalDate.of(2001, 2, 2));
@@ -175,7 +171,7 @@ class AllControllerTest {
                 .andExpect(status().is(200));
         this.mockMvc.perform(put("/films/1/like/1").content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200));
-        assertEquals(filmServiceDB.getPopularFilm(1).size(), 1);
+        assertEquals(filmDbStorage.getPopularFilm(1).size(), 1);
         this.mockMvc.perform(delete("/films/1/like/1")).andExpect(status().is(200));
         this.mockMvc.perform(get("/films/1")).andExpect(status().is(200));
 

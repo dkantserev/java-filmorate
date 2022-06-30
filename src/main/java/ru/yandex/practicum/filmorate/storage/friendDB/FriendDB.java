@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IllegalUpdateObject;
 import ru.yandex.practicum.filmorate.model.User;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -75,5 +76,23 @@ public class FriendDB implements FriendInt {
             jdbcTemplate.update("DELETE FROM FRIENDLIST  WHERE USER_ID=? and FRIEND_ID=?",
                     main.getId(), friend.getId());
         }
+    }
+
+    @Override
+    public List<User> mutualFriends(User main, User friend) {
+
+        String sql = String.format("SELECT * FROM USERBASE WHERE USER_ID IN(SELECT FRIEND_ID FROM FRIENDLIST" +
+                        " WHERE  USER_ID=%s or USER_ID=%s  GROUP BY FRIEND_ID HAVING FRIEND_ID<>%s and FRIEND_ID<>%s)",
+                main.getId(), friend.getId(), main.getId(), friend.getId());
+        return jdbcTemplate.query(sql, new RowMapper<User>() {
+            @Override
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                User u = new User(rs.getString("EMAIL"), rs.getString("LOGIN"),
+                        rs.getDate("BIRTHDAY").toLocalDate());
+                u.setId(rs.getInt(1));
+                u.setName(rs.getString("NAME"));
+                return u;
+            }
+        });
     }
 }

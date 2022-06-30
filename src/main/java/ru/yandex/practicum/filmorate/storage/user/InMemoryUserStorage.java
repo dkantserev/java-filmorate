@@ -14,6 +14,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Autowired
     private List<UserValidator> userValidatorList;
+
     private final Map<Integer, User> userMap = new HashMap();
     int id = 0;
 
@@ -73,5 +74,7 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NotFoundException("user not found");
         }
     }
+
+
 
 }

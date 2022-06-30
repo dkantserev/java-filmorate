@@ -101,4 +101,9 @@ public class UserDbStorage implements UserStorage {
         }
         return id;
     }
+
+    public int getDD(User user) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT USER_ID FROM USERBASE WHERE NAME=?", user.getName());
+        return rowSet.getInt(1);
+    }
 }

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmServiceDB;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikesDB;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
@@ -24,9 +23,6 @@ public class FilmController {
     FilmDbStorage storage;
     @Autowired
     UserDbStorage userStorage;
-    @Autowired
-    FilmServiceDB filmService;
-
     @Autowired
     LikesDB likesDB;
 
@@ -65,7 +61,7 @@ public class FilmController {
 
     @GetMapping("/popular")
     public List<Film> getPopular(@RequestParam(defaultValue = "10", required = false) int count) {
-        return filmService.getPopularFilm(count);
+        return storage.getPopularFilm(count);
     }
 
     @GetMapping("/{id}")

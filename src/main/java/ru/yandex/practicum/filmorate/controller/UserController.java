@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserServiceDB;
 import ru.yandex.practicum.filmorate.storage.friendDB.FriendDB;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
@@ -21,9 +20,6 @@ public class UserController {
 
     @Autowired
     UserDbStorage storage;
-    @Autowired
-    UserServiceDB userService;
-
     @Autowired
     FriendDB friendDB;
 
@@ -72,7 +68,7 @@ public class UserController {
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getMutual(@PathVariable int id, @PathVariable int otherId) {
-        return userService.mutualFriends(storage.getId(id), storage.getId(otherId));
+        return friendDB.mutualFriends(storage.getId(id), storage.getId(otherId));
     }
 
     @GetMapping("/{id}")
