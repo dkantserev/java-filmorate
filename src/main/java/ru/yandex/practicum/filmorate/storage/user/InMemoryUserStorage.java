@@ -75,6 +75,10 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
+   public int getIdUser(User user){
+        return getAll().get(user.getId()).getId();
+    }
+
 
 
 }

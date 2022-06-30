@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
+import ru.yandex.practicum.filmorate.service.like.LikeService;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikesDB;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
@@ -20,11 +23,11 @@ import java.util.List;
 @Validated
 public class FilmController {
     @Autowired
-    FilmDbStorage storage;
+    FilmService storage;
     @Autowired
-    UserDbStorage userStorage;
+    UserService userStorage;
     @Autowired
-    LikesDB likesDB;
+    LikeService likesDB;
 
 
     @GetMapping

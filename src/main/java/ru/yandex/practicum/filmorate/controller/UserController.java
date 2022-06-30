@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.friend.FriendService;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.friendDB.FriendDB;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
@@ -19,9 +21,9 @@ import java.util.*;
 public class UserController {
 
     @Autowired
-    UserDbStorage storage;
+    UserService storage;
     @Autowired
-    FriendDB friendDB;
+    FriendService friendDB;
 
     @GetMapping
     public List<User> get() {

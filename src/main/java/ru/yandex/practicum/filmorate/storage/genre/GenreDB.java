@@ -13,13 +13,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class GenreDB {
+public class GenreDB implements GenreDBInter {
     private final JdbcTemplate jdbcTemplate;
 
     public GenreDB(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public List<Genres> getAllGenres() {
 
         List<Genres> f=jdbcTemplate.query("SELECT * FROM GENRE ORDER BY GENRE_ID  ", new RowMapper<Genres>() {
@@ -32,6 +33,7 @@ public class GenreDB {
         return f;
     }
 
+    @Override
     public Genres getGenresId(int id) {
         if (id < 0) {
             throw new NotFoundException("negativ id");
@@ -42,12 +44,14 @@ public class GenreDB {
         }
         return null;
     }
-    public void updateGenre(Film film,int film_id){
+    @Override
+    public void updateGenre(Film film, int film_id){
         film.getGenres().stream().mapToInt(Genres::getId).
                 forEach(o -> jdbcTemplate.update(("UPDATE  FILMGENRE SET GENRE_ID=?" +
                         " WHERE FILM_ID=? ORDER BY GENRE_ID desc "), o, film_id));
     }
-    public void addGenre(Film film,int film_id){
+    @Override
+    public void addGenre(Film film, int film_id){
         film.getGenres().stream().mapToInt(Genres::getId).
                 forEach(o -> jdbcTemplate.update(("INSERT INTO  FILMGENRE (GENRE_ID, FILM_ID) " +
                         "VALUES ( ?,? )"), o, film_id));

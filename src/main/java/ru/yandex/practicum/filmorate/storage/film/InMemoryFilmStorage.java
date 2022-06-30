@@ -122,6 +122,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return r;
 
     }
+
+    @Override
+    public int getId(Film film) {
+        return filmMap.get(film.getId()).getId();
+    }
 }
 
 
