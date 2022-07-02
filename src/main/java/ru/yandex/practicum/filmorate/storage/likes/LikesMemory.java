@@ -1,27 +1,43 @@
-package ru.yandex.practicum.filmorate.service;
-
+package ru.yandex.practicum.filmorate.storage.likes;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+@Component
+public class LikesMemory implements LikesInt{
 
 
-@Service
-public class FilmService {
-    @Autowired
     InMemoryFilmStorage filmStorage;
-    @Autowired
+
+    public LikesMemory(InMemoryFilmStorage filmStorage, InMemoryUserStorage userStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+    }
+
+
     InMemoryUserStorage userStorage;
+
+    public Map<Film, Set<User>> getLikeMap() {
+        return likeMap;
+    }
+
+    public void setLikeMap(Map<Film, Set<User>> likeMap) {
+        this.likeMap = likeMap;
+    }
 
     private Map<Film, Set<User>> likeMap = new HashMap<>();
 
+    @Override
     public void addLike(Film film, User user) {
         if (filmStorage.getAll().containsValue(film) && userStorage.getAll().contains(user)) {
             if (!likeMap.containsKey(film)) {
@@ -36,21 +52,7 @@ public class FilmService {
         }
     }
 
-    public List<Film> getPopularFilm(int count) {
-        List<Film> r = likeMap.entrySet().stream().sorted((Comparator.comparingInt(o -> o.getValue().size())))
-                .map(Map.Entry::getKey).limit(count).collect(Collectors.toList());
-        if (r.size() < count && r.size() < filmStorage.getAll().size()) {
-            for (Film value : filmStorage.getAll().values()) {
-                if (!r.contains(value)) {
-                    r.add(value);
-                }
-            }
-            return filmStorage.getAll().values().stream().limit(count - r.size()).collect(Collectors.toList());
-        }
-        return r;
-
-    }
-
+    @Override
     public void deleteLike(Film film, User user) {
         if (!likeMap.containsKey(film)) {
             throw new NotFoundException("film don't found");
@@ -61,6 +63,4 @@ public class FilmService {
             likeMap.get(film).remove(user);
         }
     }
-
-
 }

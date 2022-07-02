@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.service.friend.FriendService;
+import ru.yandex.practicum.filmorate.service.user.UserService;
+import ru.yandex.practicum.filmorate.storage.friendDB.FriendDB;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -19,9 +21,9 @@ import java.util.*;
 public class UserController {
 
     @Autowired
-    InMemoryUserStorage storage;
+    UserService storage;
     @Autowired
-    UserService userService;
+    FriendService friendDB;
 
     @GetMapping
     public List<User> get() {
@@ -32,6 +34,8 @@ public class UserController {
     public User add(@Valid @RequestBody User user) {
         storage.add(user);
         log.info("add user" + user);
+        int id = storage.getIdUser(user);
+        user.setId(id);
         return user;
     }
 
@@ -44,7 +48,7 @@ public class UserController {
 
     @PutMapping("/{id}/friends/{friendId}")
     public User addFriend(@PathVariable int id, @PathVariable int friendId) {
-        userService.addFriend(storage.getId(id), storage.getId(friendId));
+        friendDB.addFriend(storage.getId(id), storage.getId(friendId));
         return storage.getId(id);
 
     }
@@ -52,7 +56,7 @@ public class UserController {
     @DeleteMapping("/{id}/friends/{friendId}")
     public User deleteFriend(@PathVariable @NotNull Map<String, String> patchV) {
         if (!patchV.get("id").isBlank() && !patchV.get("friendId").isBlank()) {
-            userService.deleteFriend(storage.getId(Integer.parseInt(patchV.get("id"))),
+            friendDB.deleteFriend(storage.getId(Integer.parseInt(patchV.get("id"))),
                     storage.getId(Integer.parseInt(patchV.get("friendId"))));
             return storage.getId(Integer.parseInt(patchV.get("friendId")));
         }
@@ -61,17 +65,22 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public Set<User> getFriends(@PathVariable int id) {
-        return userService.getAllFriends(storage.getId(id));
+        return friendDB.getAllFriends(storage.getId(id));
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getMutual(@PathVariable int id, @PathVariable int otherId) {
-        return userService.mutualFriends(storage.getId(id), storage.getId(otherId));
+        return friendDB.mutualFriends(storage.getId(id), storage.getId(otherId));
     }
 
     @GetMapping("/{id}")
     public User getId(@PathVariable int id) {
         return storage.getId(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public User deleteId(@PathVariable int id) {
+        return storage.delete(id);
     }
 
 
